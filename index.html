@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#172b26">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Plano MDF">
+<title>Plano de Corte MDF — Marcenaria Santos & Filho</title>
+<style>
+:root{--bg:#f3f5f3;--card:#fff;--ink:#17231f;--muted:#68756f;--green:#176b4b;--line:#dce4df;--orange:#d97706}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:#172b26;color:white;padding:18px 17px 17px}.brand{max-width:850px;margin:auto;display:flex;align-items:center;gap:15px}.brand-logo{width:104px;height:82px;object-fit:contain;background:#fff;border-radius:12px;padding:4px}.brand-name{font-size:clamp(16px,3vw,21px);font-weight:850;letter-spacing:.5px;line-height:1.15}header h1{margin:6px 0 0;font-size:21px}header p{margin:5px 0 0;color:#d4e2da;font-size:13px}@media(max-width:380px){.brand-logo{width:82px;height:70px}.brand{gap:10px}.brand-name{font-size:15px}}
+main{max-width:1280px;margin:auto;padding:16px 18px 44px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:15px;margin-bottom:13px;box-shadow:0 2px 8px #16271d0a}
+h2{font-size:17px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field label{display:block;font-size:12px;color:var(--muted);margin:0 0 5px}.field input,.field select{width:100%;min-height:54px;border:2px solid #b8c8be;border-radius:11px;padding:13px 12px;font-size:19px;font-weight:600;background:white;color:var(--ink)}
+button{border:0;border-radius:10px;padding:12px 15px;font-size:15px;font-weight:650;background:var(--green);color:white;cursor:pointer}.secondary{background:#e8efeb;color:#174b37}.danger{background:#fff0ed;color:#a83222}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px} .parts-head{display:none}.part{display:block;padding:16px 0;border-top:1px solid var(--line);overflow-x:auto}.part-main{display:grid;grid-template-columns:minmax(190px,1.25fr) minmax(125px,.8fr) minmax(145px,.95fr) minmax(95px,.62fr) minmax(125px,.78fr) minmax(300px,2fr) auto;gap:12px;align-items:end;min-width:1120px}.part-field{min-width:0;display:flex;flex-direction:column;gap:8px}.part-field label{display:block;font-size:16px;font-weight:800;color:#34443b;line-height:1.2}.part input,.part select{min-width:0;width:100%;min-height:78px;padding:15px 13px;border:2px solid #aebfb4;border-radius:12px;font-size:22px;font-weight:700;background:#fff;color:var(--ink)}.part .del{min-height:54px;padding:10px 12px;font-size:14px;background:#e8efeb;color:#34443b;border:1px solid #cbd6cf}.edge-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;align-content:end;align-items:center;padding:9px 10px 8px;border:2px solid #d3ded6;border-radius:12px;background:#f8faf8;font-size:13px;color:var(--muted);min-height:112px}.edge-options strong{grid-column:1/-1;text-align:left;color:var(--ink);font-size:15px;margin:0 0 2px}.edge-options label{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:40px;padding:5px 4px;border:1px solid #dce4df;border-radius:8px;background:#fff;white-space:nowrap;font-size:12px;font-weight:700;color:#34443b}.edge-options input{flex:0 0 20px;width:20px;height:20px;margin:0;accent-color:var(--green)}.hint{font-size:12px;color:var(--muted);line-height:1.45;margin:9px 0 0}.status{font-size:13px;margin-top:10px;color:var(--muted)}.sheet{margin:15px 0;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fbfcfb}.sheet h3{font-size:19px;font-weight:800;margin:0 0 10px;letter-spacing:.3px}.canvaswrap{width:100%;overflow:hidden}canvas{width:100%;height:auto;display:block;border:1px solid #d5ddd8;background:white}.legend{font-size:14px;color:var(--muted);line-height:1.55;margin-top:9px}.metric{display:inline-block;background:#edf4ef;border-radius:8px;padding:8px 10px;margin:3px 4px 3px 0;font-size:13px}.empty{padding:18px;text-align:center;color:var(--muted);font-size:13px}
+@media(max-width:900px){.part{padding:14px 0}.part-main{min-width:1120px;gap:10px}.edge-options{min-height:108px}}
+@media(max-width:600px){
+ html,body{width:100%;max-width:100%;overflow-x:hidden}
+ main{width:100%;max-width:100%;padding:8px 7px 28px}.card{padding:10px;border-radius:12px;margin-bottom:9px}
+ h2{font-size:16px;margin-bottom:9px}
+ .grid{grid-template-columns:1fr 1fr;gap:8px}
+ .field label{font-size:12px;font-weight:700}
+ .field input,.field select{min-height:48px;font-size:17px;padding:9px 8px}
+ .part{padding:12px 0;overflow:visible;width:100%}
+ .part-main{width:100%;min-width:0;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 7px;align-items:end}
+ .part-field{min-width:0;gap:5px}
+ .part-field label{font-size:12px;font-weight:800;line-height:1.15;min-height:28px;display:flex;align-items:end}
+ .part input,.part select{min-width:0;width:100%;min-height:54px;font-size:17px;padding:10px 7px;border-radius:9px}
+ .part-field:nth-child(1){grid-column:1/-1}
+ .part-field:nth-child(2),.part-field:nth-child(3),.part-field:nth-child(4){grid-column:span 1}
+ .part-field:nth-child(5){grid-column:1/2}
+ .edge-options{grid-column:2/4;grid-row:3 / span 2;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:7px;min-height:108px;align-content:center}
+ .edge-options strong{font-size:12px;grid-column:1/-1;margin:0}
+ .edge-options label{font-size:10px;min-height:32px;padding:4px 2px;gap:3px}
+ .edge-options input{flex:0 0 17px;width:17px;height:17px}
+ .part-main .del{grid-column:1/-1;min-height:42px;width:100%;font-size:13px;align-self:auto}
+ .actions{gap:7px}.actions button{flex:1 1 135px;min-height:44px;padding:10px;font-size:13px}
+ .hint{font-size:11px;line-height:1.4}
+ .sheet{padding:7px;margin:10px 0}.sheet h3{font-size:16px}
+ .metric{font-size:11px;padding:6px 7px}
+}
+@media print{header{background:white;color:black;padding:5px}.brand-logo{border:1px solid #ddd}header p{color:#333}body{background:white}.card{box-shadow:none;break-inside:avoid}button,.no-print{display:none!important}main{max-width:none;padding:0}.sheet{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header class="brand-header">
+<div class="brand">
+<img class="brand-logo" src="data:image/jpeg;base64,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" alt="Logotipo Marcenaria Santos & Filho">
+<div><div class="brand-name">MARCENARIA SANTOS &amp; FILHO</div><h1>Plano de Corte MDF</h1></div>
+</div>
+</header>
+<main>
+<section class="card">
+<h2>1. Medidas da chapa</h2>
+<div class="grid">
+<div class="field"><label>Largura da chapa (mm)</label><input id="boardW" type="number" value="2750" min="1"></div>
+<div class="field"><label>Altura da chapa (mm)</label><input id="boardH" type="number" value="1850" min="1"></div>
+<div class="field"><label>Espessura do corte / serra (mm)</label><input id="kerf" type="number" value="3" min="0" step=".5"></div>
+<div class="field"><label>Margem de segurança (mm)</label><input id="margin" type="number" value="10" min="0"></div>
+</div>
+<p class="hint">Medida padrão da chapa: 2750 × 1850 mm. Espessura da serra: 3 mm. A margem de segurança pode ser ajustada conforme o acabamento das bordas.</p>
+</section>
+<section class="card">
+<h2>2. Peças para cortar</h2>
+<div class="parts-head"><span>Descrição</span><span>Largura</span><span>Altura</span><span>Qtd.</span><span>Girar</span><span></span></div>
+<div id="parts"></div>
+<div class="actions no-print"><button class="secondary" id="add">＋ Adicionar peça</button><button class="secondary" id="example">Carregar exemplo</button></div>
+<p class="hint">Informe as medidas em milímetros. Marque “Sim” para permitir girar a peça em 90°. Para padrões com veio, deixe “Não” quando o sentido precisar ser mantido. Selecione abaixo de cada peça os lados que receberão fita de borda.</p>
+</section>
+<section class="card">
+<h2>3. Gerar plano</h2>
+<div class="actions no-print"><button id="run">Calcular plano de corte</button><button class="secondary" id="save">Salvar lista</button><button class="secondary" id="csv">Exportar CSV</button><button class="secondary" onclick="window.print()">Imprimir / PDF</button></div>
+<div id="summary" class="status">Adicione as peças e toque em “Calcular plano de corte”.</div>
+<div id="results"></div>
+</section>
+<section class="card">
+<h2>Observações importantes</h2>
+<p class="hint">O desenho mostra as cotas de largura (L) e comprimento/altura (C) em cada peça. As linhas azuis numeradas indicam uma sequência de cortes guilhotinados: cada passagem atravessa uma área retangular livre. Confirme a sequência e os parâmetros da máquina antes de cortar. Antes de cortar, confira as medidas, o sentido do veio, esquadro, bordas e a sequência de cortes na seccionadora. O encaixe considera a largura da serra e a possibilidade de rotação indicada.</p>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let lastPlan=null, colors=['#d9eadf','#dce8f5','#f8e6cc','#e8def4','#f4dfe2','#d9eeee','#eee8d5','#dfe5ee'];
+function addPart(name='',w='',h='',q=1,rot='yes',edges=[]){
+ const row=document.createElement('div');row.className='part';
+ row.innerHTML=`<div class="part-main">
+ <div class="part-field"><label>Peça</label><input aria-label="Peça" placeholder="Ex.: Lateral" value="${name}"></div>
+ <div class="part-field"><label>Largura (mm)</label><input aria-label="Largura" type="number" min="1" placeholder="600" value="${w}"></div>
+ <div class="part-field"><label>Comprimento (mm)</label><input aria-label="Comprimento" type="number" min="1" placeholder="720" value="${h}"></div>
+ <div class="part-field"><label>Quantidade</label><input aria-label="Quantidade" type="number" min="1" value="${q}"></div>
+ <div class="part-field"><label>Permitir girar?</label><select aria-label="Permitir girar"><option value="yes" ${rot==='yes'?'selected':''}>Sim</option><option value="no" ${rot==='no'?'selected':''}>Não</option></select></div>
+ <div class="edge-options"><strong>BORDEAMENTO DESTA PEÇA</strong>
+ <label><input type="checkbox" value="top" ${edges.includes('top')?'checked':''}> Superior</label>
+ <label><input type="checkbox" value="bottom" ${edges.includes('bottom')?'checked':''}> Inferior</label>
+ <label><input type="checkbox" value="left" ${edges.includes('left')?'checked':''}> Esquerda</label>
+ <label><input type="checkbox" value="right" ${edges.includes('right')?'checked':''}> Direita</label>
+ </div></div>`;
+ const del=document.createElement('button');del.className='del';del.textContent='Excluir';del.title='Remover peça';del.onclick=()=>row.remove();
+ row.querySelector('.part-main').appendChild(del);$('parts').appendChild(row);
+}
+function readParts(){
+ let out=[];
+ document.querySelectorAll('.part').forEach((r,i)=>{
+  const main=r.querySelector('.part-main'),a=main.querySelectorAll('input,select');
+  const name=a[0].value.trim()||'Peça '+(i+1),w=+a[1].value,h=+a[2].value,q=+a[3].value,rot=a[4].value==='yes';
+  const edges=[...r.querySelectorAll('.edge-options input:checked')].map(x=>x.value);
+  if(w>0&&h>0&&q>0)for(let n=1;n<=Math.min(q,500);n++)out.push({name,w,h,rot,edges,unit:n,id:out.length});
+ });
+ return out;
+}
+function pack(items,W,H,kerf){
+ // Otimizador guilhotinado: prioriza peças grandes e escolhe o melhor encaixe
+ // considerando sobra curta, área desperdiçada e fragmentação do espaço livre.
+ let free=[{x:0,y:0,w:W,h:H}],placed=[],cuts=[],cutNo=1;
+ const ordered=items.slice().sort((a,b)=>
+   (b.w*b.h)-(a.w*a.h) || Math.max(b.w,b.h)-Math.max(a.w,a.h) || Math.min(b.w,b.h)-Math.min(a.w,a.h)
+ );
+ for(const p of ordered){
+  let best=null;
+  for(let i=0;i<free.length;i++){
+   const f=free[i];
+   for(let rot=0;rot<(p.rot&&p.w!==p.h?2:1);rot++){
+    const pw=rot?p.h:p.w,ph=rot?p.w:p.h;
+    if(pw>f.w||ph>f.h)continue;
+    const remX=f.w-pw,remY=f.h-ph;
+    const leftoverArea=Math.max(0,f.w*f.h-pw*ph);
+    const shortFit=Math.min(remX,remY),longFit=Math.max(remX,remY);
+    for(let split=0;split<2;split++){
+     // Avalia as duas sequências possíveis de cortes completos (guilhotina).
+     let r1,r2;
+     if(split===0){
+      r1={w:Math.max(0,f.w-pw-kerf),h:f.h};
+      r2={w:pw,h:Math.max(0,f.h-ph-kerf)};
+     }else{
+      r1={w:f.w,h:Math.max(0,f.h-ph-kerf)};
+      r2={w:Math.max(0,f.w-pw-kerf),h:ph};
+     }
+     const usable1=r1.w>=Math.min(p.w,p.h)&&r1.h>=Math.min(p.w,p.h);
+     const usable2=r2.w>=Math.min(p.w,p.h)&&r2.h>=Math.min(p.w,p.h);
+     const tinyPenalty=[r1,r2].reduce((v,r)=>v+((r.w>0&&r.h>0&&(r.w<35||r.h<35))?18000:0),0);
+     const fragmentation=(usable1?0:Math.min(r1.w*r1.h,100000))+(usable2?0:Math.min(r2.w*r2.h,100000));
+     const score=shortFit*900+longFit*2+leftoverArea*.015+tinyPenalty+fragmentation*.025;
+     if(!best||score<best.score)best={i,rot,pw,ph,split,score,f};
+    }
+   }
+  }
+  if(!best)return {placed,cuts,failed:p};
+  const f=best.f,{pw,ph,split}=best;
+  placed.push({...p,x:f.x,y:f.y,w:pw,h:ph,rot:!!best.rot});
+  free.splice(best.i,1);
+  const rx=f.x+pw+kerf,by=f.y+ph+kerf;
+  if(split===0){
+   if(f.w-pw>kerf){cuts.push({n:cutNo++,x:f.x+pw+kerf/2,y:f.y,w:0,h:f.h,dir:'V'});free.push({x:rx,y:f.y,w:f.w-pw-kerf,h:f.h});}
+   if(f.h-ph>kerf){cuts.push({n:cutNo++,x:f.x,y:f.y+ph+kerf/2,w:pw,h:0,dir:'H'});free.push({x:f.x,y:by,w:pw,h:f.h-ph-kerf});}
+  }else{
+   if(f.h-ph>kerf){cuts.push({n:cutNo++,x:f.x,y:f.y+ph+kerf/2,w:f.w,h:0,dir:'H'});free.push({x:f.x,y:by,w:f.w,h:f.h-ph-kerf});}
+   if(f.w-pw>kerf){cuts.push({n:cutNo++,x:f.x+pw+kerf/2,y:f.y,w:0,h:ph,dir:'V'});free.push({x:rx,y:f.y,w:f.w-pw-kerf,h:ph});}
+  }
+ }
+ return {placed,cuts};
+}
+function drawSheet(placed,W,H,index){
+ const box=document.createElement('div');box.className='sheet';
+ box.innerHTML=`<h3>CHAPA ${index+1} — ${placed.length} PEÇA(S)</h3>`;
+ const c=document.createElement('canvas'),scale=1500/W;
+ const topBand=58,leftBand=90;
+ c.width=1500+leftBand;c.height=Math.round(H*scale)+topBand;
+ box.appendChild(c);
+ const ctx=c.getContext('2d');
+ ctx.fillStyle='#f7f8f7';ctx.fillRect(0,0,c.width,c.height);
+ // Área de corte deslocada para abrir espaço às cotas gerais da chapa.
+ ctx.save();ctx.translate(leftBand,topBand);
+ ctx.strokeStyle='#34443b';ctx.lineWidth=3;ctx.strokeRect(2,2,1500-4,Math.round(H*scale)-4);
+ ctx.restore();
+
+ // Dimensões totais do painel: comprimento acima e largura na lateral esquerda.
+ ctx.fillStyle='#17231f';ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.font='900 31px Arial,sans-serif';
+ ctx.fillText(`${W + 2*(+$('margin').value)} mm`,leftBand+750,27);
+ ctx.save();ctx.translate(30,topBand+Math.round(H*scale)/2);ctx.rotate(-Math.PI/2);
+ ctx.fillText(`${H + 2*(+$('margin').value)} mm`,0,0);ctx.restore();
+
+ function drawNumber(value,cx,cy,angle,maxW,maxH){
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(angle);
+  const txt=String(value);
+  ctx.font='900 38px Arial,sans-serif';
+  const byWidth=38*(maxW-8)/Math.max(1,ctx.measureText(txt).width);
+  const fs=Math.max(12,Math.min(38,byWidth,maxH*.78));
+  ctx.font=`900 ${fs}px Arial,sans-serif`;
+  const tw=ctx.measureText(txt).width,th=fs*1.2;
+  ctx.fillStyle='#101b15';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(txt,0,0);ctx.restore();
+ }
+
+ placed.forEach((p,i)=>{
+  let x=leftBand+p.x*scale,y=topBand+p.y*scale,w=p.w*scale,h=p.h*scale;
+  ctx.fillStyle=colors[(p.id||i)%colors.length];ctx.fillRect(x,y,w,h);
+  ctx.strokeStyle='#40564a';ctx.lineWidth=2;ctx.strokeRect(x,y,w,h);
+
+  // Fita de borda: traços laranja nos lados selecionados pelo usuário.
+  if(p.edges && p.edges.length){
+   ctx.save();ctx.strokeStyle='#e07816';ctx.lineWidth=8;ctx.lineCap='square';
+   if(p.edges.includes('top')){ctx.beginPath();ctx.moveTo(x+4,y+4);ctx.lineTo(x+w-4,y+4);ctx.stroke();}
+   if(p.edges.includes('bottom')){ctx.beginPath();ctx.moveTo(x+4,y+h-4);ctx.lineTo(x+w-4,y+h-4);ctx.stroke();}
+   if(p.edges.includes('left')){ctx.beginPath();ctx.moveTo(x+4,y+4);ctx.lineTo(x+4,y+h-4);ctx.stroke();}
+   if(p.edges.includes('right')){ctx.beginPath();ctx.moveTo(x+w-4,y+4);ctx.lineTo(x+w-4,y+h-4);ctx.stroke();}
+   ctx.restore();
+  }
+
+  // Apenas os valores numéricos: comprimento na horizontal e largura na vertical.
+  drawNumber(p.w,x+w/2,y+h*.27,0,w-6,Math.max(14,h*.38));
+  drawNumber(p.h,x+w*.76,y+h/2,-Math.PI/2,h-6,Math.max(14,w*.38));
+
+  // Nome/identificação da peça em fonte maior e destacada.
+  if(w>65&&h>42){
+   const name=p.name.slice(0,22);
+   ctx.save();
+   ctx.font='900 34px Arial,sans-serif';
+   const maxTextW=w-14, maxTextH=Math.max(16,h*.30);
+   const fitted=Math.max(12,Math.min(34,34*maxTextW/Math.max(1,ctx.measureText(name).width),maxTextH));
+   ctx.font=`900 ${fitted}px Arial,sans-serif`;
+   const tw=ctx.measureText(name).width,th=fitted*1.2;
+   ctx.fillStyle='#101b15';ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.fillText(name,x+w/2,y+h*.88);
+   ctx.restore();
+  }
+
+  // Referência visual de início: traços vermelhos no topo e à esquerda.
+  ctx.save();ctx.strokeStyle='#b42318';ctx.fillStyle='#b42318';ctx.lineWidth=3;
+  ctx.setLineDash([9,7]);
+  if(w>12){ctx.beginPath();ctx.moveTo(x,y+3);ctx.lineTo(x+w,y+3);ctx.stroke();}
+  if(h>12){ctx.beginPath();ctx.moveTo(x+3,y);ctx.lineTo(x+3,y+h);ctx.stroke();}
+  ctx.setLineDash([]);ctx.beginPath();ctx.arc(x+3,y+3,6,0,Math.PI*2);ctx.fill();ctx.restore();
+ });
+ // Desenha as linhas guilhotinadas reais, numeradas na ordem de execução.
+ const sheetPlan=lastPlan && lastPlan.sheets[index];
+ if(sheetPlan && sheetPlan.cuts){
+  sheetPlan.cuts.forEach(cut=>{
+   ctx.save();ctx.strokeStyle='#075985';ctx.lineWidth=4;ctx.setLineDash([13,7]);
+   ctx.beginPath();
+   if(cut.dir==='V'){const xx=leftBand+cut.x*scale;ctx.moveTo(xx,topBand+cut.y*scale);ctx.lineTo(xx,topBand+(cut.y+cut.h)*scale);}
+   else{const yy=topBand+cut.y*scale;ctx.moveTo(leftBand+cut.x*scale,yy);ctx.lineTo(leftBand+(cut.x+cut.w)*scale,yy);}
+   ctx.stroke();ctx.setLineDash([]);
+   const px=cut.dir==='V'?leftBand+cut.x*scale:leftBand+(cut.x+cut.w/2)*scale;
+   const py=cut.dir==='V'?topBand+(cut.y+cut.h/2)*scale:topBand+cut.y*scale;
+   ctx.fillStyle='#075985';ctx.beginPath();ctx.arc(px,py,17,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#fff';ctx.font='900 19px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(cut.n,px,py);
+   ctx.restore();
+  });
+ }
+ return box;
+}
+function calculate(){
+ const W=+$('boardW').value-2*(+$('margin').value),H=+$('boardH').value-2*(+$('margin').value),kerf=+$('kerf').value;
+ if(W<=0||H<=0||kerf<0){$('summary').textContent='Confira as medidas da chapa, margem e serra.';return}
+ let items=readParts();if(!items.length){$('summary').textContent='Informe pelo menos uma peça com largura, altura e quantidade válidas.';return}
+ let remaining=items.slice(),sheets=[],failed=null;
+ while(remaining.length&&sheets.length<100){let res=pack(remaining,W,H,kerf);if(!res.placed.length){failed=res.failed||remaining[0];break}
+ sheets.push(Object.assign(res.placed,{cuts:res.cuts||[]}));let ids=new Set(res.placed.map(p=>p.id));remaining=remaining.filter(p=>!ids.has(p.id));
+ }
+ lastPlan={sheets,W,H,kerf,items};
+ $('results').innerHTML='';sheets.forEach((s,i)=>$('results').appendChild(drawSheet(s,W,H,i)));
+ let area=items.reduce((n,p)=>n+p.w*p.h,0),boardArea=W*H*sheets.length,used=boardArea?area/boardArea*100:0;
+ let totalCuts=sheets.reduce((n,sh)=>n+(sh.cuts||[]).length,0);
+ $('summary').innerHTML=`<span class="metric">${items.length} peças</span><span class="metric">${sheets.length} chapa(s)</span><span class="metric">${totalCuts} cortes no projeto</span><span class="metric">${used.toFixed(1)}% de aproveitamento bruto</span>`+(failed?`<p style="color:#a83222">Não foi possível encaixar: ${failed.name} (${failed.w} × ${failed.h} mm). Verifique as dimensões ou a rotação.</p>`:'<p>Todos os itens foram alocados.</p>');
+}
+$('add').onclick=()=>addPart();$('run').onclick=calculate;
+$('example').onclick=()=>{ $('parts').innerHTML='';addPart('Lateral',600,720,2,'no');addPart('Prateleira',568,500,4,'yes');addPart('Porta',400,710,2,'no');addPart('Base',568,100,1,'yes');};
+$('save').onclick=()=>{let data={boardW:$('boardW').value,boardH:$('boardH').value,kerf:$('kerf').value,margin:$('margin').value,parts:[...document.querySelectorAll('.part')].map(r=>{let a=r.querySelector('.part-main').querySelectorAll('input,select');return [a[0].value,a[1].value,a[2].value,a[3].value,a[4].value,[...r.querySelectorAll('.edge-options input:checked')].map(x=>x.value)]})};localStorage.setItem('planoMDF',JSON.stringify(data));$('summary').textContent='Lista salva neste iPhone/navegador.'};
+$('csv').onclick=()=>{let rows=[['Descrição','Largura (mm)','Comprimento (mm)','Quantidade','Permite girar','Fita de borda'],...([...document.querySelectorAll('.part')].map(r=>{let a=r.querySelector('.part-main').querySelectorAll('input,select');return [a[0].value,a[1].value,a[2].value,a[3].value,a[4].value,[...r.querySelectorAll('.edge-options input:checked')].map(x=>({top:'Superior',bottom:'Inferior',left:'Esquerda',right:'Direita'}[x.value])).join(', ')]}))];let csv=rows.map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(';')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='lista-pecas-mdf.csv';a.click();URL.revokeObjectURL(a.href)};
+try{let d=JSON.parse(localStorage.getItem('planoMDF'));if(d){$('boardW').value=(String(d.boardW)==='2740'&&String(d.boardH)==='1840')?'2750':d.boardW;$('boardH').value=(String(d.boardW)==='2740'&&String(d.boardH)==='1840')?'1850':d.boardH;$('kerf').value=String(d.kerf)==='4'?'3':d.kerf;$('margin').value=d.margin;d.parts.forEach(p=>addPart(p[0],p[1],p[2],p[3],p[4],p[5]||[]));}else addPart();}catch(e){addPart()}
+</script>
+
+<script>
+// Registra o cache offline quando o aplicativo estiver hospedado em HTTPS (GitHub Pages).
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Não foi possível ativar o modo offline:', err));
+  });
+}
+</script>
+</body></html>

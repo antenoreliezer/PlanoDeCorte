@@ -1,0 +1,19 @@
+# Plano de Corte MDF — Marcenaria Santos & Filho
+
+## Publicar no GitHub Pages
+1. Envie **todo o conteúdo desta pasta** para a raiz do repositório (não envie apenas o ZIP).
+2. No GitHub, abra **Settings → Pages**.
+3. Em **Build and deployment**, escolha **Deploy from a branch**.
+4. Selecione a branch `main` e a pasta `/ (root)` e salve.
+5. Aguarde o GitHub Pages publicar e abra o endereço HTTPS gerado no Safari do iPhone.
+
+## Instalar no iPhone e preparar o offline
+1. Com internet, abra o site publicado no Safari.
+2. Aguarde alguns segundos para o cache offline ser instalado.
+3. Toque em **Compartilhar → Adicionar à Tela de Início**. Se disponível, habilite a opção para abrir como app.
+4. Abra pelo novo ícone enquanto ainda estiver conectado à internet pelo menos uma vez.
+5. Depois disso, teste em modo avião.
+
+O aplicativo faz os cálculos no próprio iPhone e não depende de conexão para calcular. O Service Worker armazena os arquivos do app para permitir a abertura offline após o primeiro carregamento bem-sucedido. A publicação de atualizações pode exigir abrir o app novamente com internet.
+
+**Importante:** não apague os dados do Safari/site nem limpe os dados do site, pois isso pode remover o cache offline. Os dados salvos na lista usam o armazenamento local do navegador e podem não ser compartilhados entre Safari e o ícone instalado.
