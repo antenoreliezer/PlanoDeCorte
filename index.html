@@ -44,7 +44,28 @@ button{border:0;border-radius:10px;padding:12px 15px;font-size:15px;font-weight:
  .sheet{padding:7px;margin:10px 0}.sheet h3{font-size:16px}
  .metric{font-size:11px;padding:6px 7px}
 }
-@media print{header{background:white;color:black;padding:5px}.brand-logo{border:1px solid #ddd}header p{color:#333}body{background:white}.card{box-shadow:none;break-inside:avoid}button,.no-print{display:none!important}main{max-width:none;padding:0}.sheet{break-inside:avoid}}
+@media print{
+  html,body{width:100%;max-width:none;overflow:visible!important;background:#fff!important}
+  header{background:white;color:black;padding:5px}
+  .brand{max-width:none}
+  .brand-logo{border:1px solid #ddd}
+  header p{color:#333}
+  main{width:100%;max-width:none;padding:0}
+  .card{box-shadow:none;break-inside:avoid;overflow:visible}
+  button,.no-print{display:none!important}
+  .part{overflow:visible!important;break-inside:avoid}
+  .part-main{width:100%;min-width:0!important;grid-template-columns:1.2fr .75fr .85fr .55fr .75fr 1.5fr!important;gap:5px!important}
+  .part-field{min-width:0}
+  .part input,.part select{min-width:0;min-height:28px;padding:4px;font-size:10px}
+  .edge-options{min-height:0;grid-template-columns:repeat(2,minmax(0,1fr));padding:4px;font-size:9px}
+  .edge-options strong{font-size:9px}
+  .edge-options label{font-size:8px;min-height:18px}
+  .sheet{break-inside:avoid;overflow:visible}
+  .canvaswrap{overflow:visible}
+  canvas{width:100%!important;height:auto!important;max-width:100%;display:block}
+  .metric{font-size:10px}
+}
+.brand-logo{border:1px solid #ddd}header p{color:#333}body{background:white}.card{box-shadow:none;break-inside:avoid}button,.no-print{display:none!important}main{max-width:none;padding:0}.sheet{break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -269,6 +290,7 @@ function calculate(){
  let totalCuts=sheets.reduce((n,sh)=>n+(sh.cuts||[]).length,0);
  $('summary').innerHTML=`<span class="metric">${items.length} peças</span><span class="metric">${sheets.length} chapa(s)</span><span class="metric">${totalCuts} cortes no projeto</span><span class="metric">${used.toFixed(1)}% de aproveitamento bruto</span>`+(failed?`<p style="color:#a83222">Não foi possível encaixar: ${failed.name} (${failed.w} × ${failed.h} mm). Verifique as dimensões ou a rotação.</p>`:'<p>Todos os itens foram alocados.</p>');
 }
+$('printPdf').onclick=()=>{try{window.focus();window.print();}catch(e){alert('Abra o app pelo Safari e use Compartilhar > Imprimir.');}};
 $('add').onclick=()=>addPart();$('run').onclick=calculate;
 $('example').onclick=()=>{ $('parts').innerHTML='';addPart('Lateral',600,720,2,'no');addPart('Prateleira',568,500,4,'yes');addPart('Porta',400,710,2,'no');addPart('Base',568,100,1,'yes');};
 $('save').onclick=()=>{let data={boardW:$('boardW').value,boardH:$('boardH').value,kerf:$('kerf').value,margin:$('margin').value,parts:[...document.querySelectorAll('.part')].map(r=>{let a=r.querySelector('.part-main').querySelectorAll('input,select');return [a[0].value,a[1].value,a[2].value,a[3].value,a[4].value,[...r.querySelectorAll('.edge-options input:checked')].map(x=>x.value)]})};localStorage.setItem('planoMDF',JSON.stringify(data));$('summary').textContent='Lista salva neste iPhone/navegador.'};
@@ -278,42 +300,6 @@ try{let d=JSON.parse(localStorage.getItem('planoMDF'));if(d){$('boardW').value=(
 
 <script>
 // Registra o cache offline quando o aplicativo estiver hospedado em HTTPS (GitHub Pages).
-// Impressão reforçada para Safari e para o app instalado no iPhone.
-function printPlan() {
-  const btn = document.getElementById('printPdf');
-  if (btn) { btn.disabled = true; btn.textContent = 'Preparando…'; }
-  // Abrir a janela dentro do toque do usuário evita bloqueio de pop-up no iOS.
-  let w = null;
-  try { w = window.open('', '_blank'); } catch (e) {}
-  const css = `<style>
-    @page{size:auto;margin:12mm}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    body{margin:0;color:#17231f;font:12px -apple-system,BlinkMacSystemFont, sans-serif}
-    header{background:#fff;color:#17231f;padding:5px 0 12px;border-bottom:1px solid #ccc}
-    .brand{display:flex;align-items:center;gap:12px}.brand-logo{width:75px;height:60px;object-fit:contain}
-    .brand-name{font-size:16px;font-weight:800}header h1{font-size:19px;margin:5px 0}header p{color:#333}
-    main{max-width:none;padding:10px 0}.card{border:1px solid #dce4df;border-radius:8px;padding:10px;margin:0 0 10px;box-shadow:none;break-inside:avoid}
-    h2{font-size:15px;margin:0 0 8px}.part{overflow:visible;break-inside:avoid}
-    .part-main{min-width:0;display:grid;grid-template-columns:1.3fr .8fr .8fr .5fr .7fr 1.6fr;gap:6px}
-    .part input,.part select{min-height:28px;padding:4px;font-size:11px}.edge-options{min-height:0;font-size:9px}
-    .edge-options label{font-size:9px;min-height:20px}.actions,button,.no-print,.del{display:none!important}
-    .sheet{break-inside:avoid;margin:10px 0;padding:6px}.sheet h3{font-size:14px}
-    canvas{width:100%!important;height:auto!important}.hint,.legend,.status{font-size:10px}.metric{font-size:10px}
-    @media print{.card,.sheet{break-inside:avoid}}
-  </style>`;
-  const body = document.querySelector('header').outerHTML + document.querySelector('main').outerHTML;
-  if (w && !w.closed) {
-    w.document.open();
-    w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plano de Corte MDF</title>${css}</head><body>${body}<script>window.onload=function(){setTimeout(function(){window.focus();window.print();},600)};<\/script></body></html>`);
-    w.document.close();
-  } else {
-    if (btn) { btn.disabled=false; btn.textContent='Imprimir / PDF'; }
-    try { window.focus(); window.print(); }
-    catch(e) { alert('No iPhone, abra o endereço no Safari, toque em Compartilhar e escolha Imprimir.'); }
-  }
-  if (btn) setTimeout(()=>{btn.disabled=false;btn.textContent='Imprimir / PDF';},1200);
-}
-document.getElementById('printPdf')?.addEventListener('click', printPlan);
-
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Não foi possível ativar o modo offline:', err));

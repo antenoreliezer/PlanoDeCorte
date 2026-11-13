@@ -1,4 +1,4 @@
-const CACHE_NAME = 'plano-corte-mdf-v3';
+const CACHE_NAME = 'plano-corte-mdf-v4';
 const APP_FILES = [
   './',
   './index.html',

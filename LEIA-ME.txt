@@ -22,5 +22,5 @@ O aplicativo faz os cálculos no próprio iPhone e não depende de conexão para
 Se já instalou uma versão anterior no iPhone, remova o atalho antigo da Tela de Início, abra a página atualizada no Safari e adicione novamente à Tela de Início para atualizar o ícone.
 
 
-IMPRESSÃO NO IPHONE
-A versão atualizada prepara uma página própria para impressão. Toque em Imprimir / PDF. Na tela de impressão do iPhone, use Compartilhar ou Imprimir; para salvar como PDF, abra a prévia e use Compartilhar > Salvar em Arquivos. Se o app instalado não abrir a janela, abra o endereço do GitHub Pages no Safari e repita.
+CORREÇÃO DE IMPRESSÃO PARA IPHONE
+Esta versão usa a impressão nativa da própria página, sem abrir uma janela separada. Isso preserva os desenhos do plano (canvas) e evita bloqueios de janelas no iOS. Atualize TODOS os arquivos no GitHub, inclusive sw.js, para invalidar o cache anterior. No iPhone, abra o app com internet uma vez. Toque em Imprimir / PDF. Se o iOS não abrir a folha de impressão dentro do app instalado, abra a mesma URL no Safari e use Compartilhar > Imprimir; na prévia, amplie com dois dedos e use Compartilhar > Salvar em Arquivos para guardar o PDF.
