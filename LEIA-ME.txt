@@ -24,3 +24,7 @@ Se já instalou uma versão anterior no iPhone, remova o atalho antigo da Tela d
 
 CORREÇÃO DE IMPRESSÃO PARA IPHONE
 Esta versão usa a impressão nativa da própria página, sem abrir uma janela separada. Isso preserva os desenhos do plano (canvas) e evita bloqueios de janelas no iOS. Atualize TODOS os arquivos no GitHub, inclusive sw.js, para invalidar o cache anterior. No iPhone, abra o app com internet uma vez. Toque em Imprimir / PDF. Se o iOS não abrir a folha de impressão dentro do app instalado, abra a mesma URL no Safari e use Compartilhar > Imprimir; na prévia, amplie com dois dedos e use Compartilhar > Salvar em Arquivos para guardar o PDF.
+
+
+CORREÇÃO DOS BOTÕES NA TELA
+Foi removido um trecho residual do CSS de impressão que ocultava os controles também na tela normal. A regra de ocultação agora fica restrita a @media print. O cache foi atualizado para v5.
