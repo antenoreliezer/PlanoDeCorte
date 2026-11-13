@@ -28,3 +28,14 @@ Esta versão usa a impressão nativa da própria página, sem abrir uma janela s
 
 CORREÇÃO DOS BOTÕES NA TELA
 Foi removido um trecho residual do CSS de impressão que ocultava os controles também na tela normal. A regra de ocultação agora fica restrita a @media print. O cache foi atualizado para v5.
+
+
+VERSÃO V6 — AUDITORIA DOS BOTÕES
+Nesta versão, removemos completamente a classe no-print dos controles. Os botões de adicionar peça e as ações do plano ficam explicitamente visíveis em modo de tela. Somente durante a impressão os botões de ação e os botões de excluir são ocultados. O cache do Service Worker foi atualizado para v6.
+
+IMPORTANTE PARA ATUALIZAR NO IPHONE
+Substitua TODOS os arquivos do repositório, inclusive sw.js, index.html, manifest.json e a pasta icons. Depois abra o endereço do GitHub Pages no Safari com internet, atualize a página e feche/reabra o app. Se o iPhone continuar exibindo a versão antiga, remova o ícone antigo da Tela de Início, abra o site no Safari e adicione-o novamente.
+
+
+VERSAO 7: PDF GERADO LOCALMENTE
+O botao Gerar / Compartilhar PDF cria um PDF real, com uma pagina para cada chapa, sem usar window.print. No iPhone instalado, use o menu Compartilhar para escolher Imprimir ou Salvar em Arquivos. Se nao aparecer, o arquivo sera baixado. Teste no seu dispositivo.

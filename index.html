@@ -52,7 +52,7 @@ button{border:0;border-radius:10px;padding:12px 15px;font-size:15px;font-weight:
   header p{color:#333}
   main{width:100%;max-width:none;padding:0}
   .card{box-shadow:none;break-inside:avoid;overflow:visible}
-  button,.no-print{display:none!important}
+  .actions,.part .del{display:none!important}
   .part{overflow:visible!important;break-inside:avoid}
   .part-main{width:100%;min-width:0!important;grid-template-columns:1.2fr .75fr .85fr .55fr .75fr 1.5fr!important;gap:5px!important}
   .part-field{min-width:0}
@@ -66,6 +66,12 @@ button{border:0;border-radius:10px;padding:12px 15px;font-size:15px;font-weight:
   .metric{font-size:10px}
 }
 
+
+/* Controles sempre visíveis na tela normal; ocultação ocorre só em @media print. */
+@media screen {
+  .actions { display:flex !important; }
+  .actions button { display:inline-block !important; visibility:visible !important; }
+}
 </style>
 </head>
 <body>
@@ -90,12 +96,12 @@ button{border:0;border-radius:10px;padding:12px 15px;font-size:15px;font-weight:
 <h2>2. Peças para cortar</h2>
 <div class="parts-head"><span>Descrição</span><span>Largura</span><span>Altura</span><span>Qtd.</span><span>Girar</span><span></span></div>
 <div id="parts"></div>
-<div class="actions no-print"><button class="secondary" id="add">＋ Adicionar peça</button><button class="secondary" id="example">Carregar exemplo</button></div>
+<div class="actions"><button class="secondary" id="add">＋ Adicionar peça</button><button class="secondary" id="example">Carregar exemplo</button></div>
 <p class="hint">Informe as medidas em milímetros. Marque “Sim” para permitir girar a peça em 90°. Para padrões com veio, deixe “Não” quando o sentido precisar ser mantido. Selecione abaixo de cada peça os lados que receberão fita de borda.</p>
 </section>
 <section class="card">
 <h2>3. Gerar plano</h2>
-<div class="actions no-print"><button id="run">Calcular plano de corte</button><button class="secondary" id="save">Salvar lista</button><button class="secondary" id="csv">Exportar CSV</button><button class="secondary" id="printPdf" type="button">Imprimir / PDF</button></div>
+<div class="actions"><button id="run">Calcular plano de corte</button><button class="secondary" id="save">Salvar lista</button><button class="secondary" id="csv">Exportar CSV</button><button class="secondary" id="printPdf" type="button">Gerar / Compartilhar PDF</button></div>
 <div id="summary" class="status">Adicione as peças e toque em “Calcular plano de corte”.</div>
 <div id="results"></div>
 </section>
@@ -290,7 +296,93 @@ function calculate(){
  let totalCuts=sheets.reduce((n,sh)=>n+(sh.cuts||[]).length,0);
  $('summary').innerHTML=`<span class="metric">${items.length} peças</span><span class="metric">${sheets.length} chapa(s)</span><span class="metric">${totalCuts} cortes no projeto</span><span class="metric">${used.toFixed(1)}% de aproveitamento bruto</span>`+(failed?`<p style="color:#a83222">Não foi possível encaixar: ${failed.name} (${failed.w} × ${failed.h} mm). Verifique as dimensões ou a rotação.</p>`:'<p>Todos os itens foram alocados.</p>');
 }
-$('printPdf').onclick=()=>{try{window.focus();window.print();}catch(e){alert('Abra o app pelo Safari e use Compartilhar > Imprimir.');}};
+
+// Gera um PDF de verdade no próprio iPhone, sem window.print() ou dependências externas.
+// Cada chapa vira uma página A4 horizontal, preservando o canvas original.
+const pdfEncoder = new TextEncoder();
+function pdfBytes(str) { return pdfEncoder.encode(str); }
+function base64Bytes(dataUrl) {
+  const binary = atob(dataUrl.substring(dataUrl.indexOf(',') + 1));
+  const out = new Uint8Array(binary.length);
+  for (let i=0;i<binary.length;i++) out[i]=binary.charCodeAt(i);
+  return out;
+}
+function createCutPdf() {
+  const canvases=[...document.querySelectorAll('#results .sheet canvas')];
+  if(!lastPlan || !canvases.length) throw new Error('Calcule o plano de corte antes de gerar o PDF.');
+  const chunks=[], offsets=[0], objects=[];
+  let size=0;
+  const append=(bytes)=>{chunks.push(bytes);size+=bytes.length;};
+  const addObj=(body)=>{objects.push(body);return objects.length;};
+  const pageIds=[], imageIds=[], contentIds=[];
+  // Objetos reservados: catálogo, árvore de páginas, depois páginas e imagens.
+  const catalogId=addObj('');
+  const pagesId=addObj('');
+  const pageW=842,pageH=595, margin=32;
+  canvases.forEach((canvas,i)=>{
+    const jpg=base64Bytes(canvas.toDataURL('image/jpeg',0.9));
+    const imageId=addObj({jpg,width:canvas.width,height:canvas.height});
+    const availableW=pageW-2*margin, availableH=pageH-112;
+    const scale=Math.min(availableW/canvas.width,availableH/canvas.height);
+    const w=canvas.width*scale,h=canvas.height*scale;
+    const x=(pageW-w)/2,y=35+(availableH-h)/2;
+    const esc=t=>String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7e]/g,'').replace(/[()\\]/g,c=>'\\'+c);
+    const count=lastPlan.sheets[i].length;
+    const cmd=`q 0.09 0.17 0.14 rg BT /F1 17 Tf 32 557 Td (MARCENARIA SANTOS & FILHO) Tj ET Q\n`+
+      `BT /F1 12 Tf 32 536 Td (PLANO DE CORTE MDF - CHAPA ${i+1} - ${count} PECAS) Tj ET\n`+
+      `BT /F1 9 Tf 32 518 Td (Chapa: ${esc($('boardW').value)} x ${esc($('boardH').value)} mm  |  Serra: ${esc($('kerf').value)} mm  |  Margem: ${esc($('margin').value)} mm) Tj ET\n`+
+      `q ${w.toFixed(2)} 0 0 ${h.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im${i+1} Do Q\n`+
+      `BT /F1 8 Tf 32 18 Td (Confira medidas, veio e sequencia antes do corte.) Tj ET\n`;
+    const bytes=pdfBytes(cmd);
+    const contentId=addObj({stream:bytes});
+    const pageId=addObj(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> /XObject << /Im${i+1} ${imageId} 0 R >> >> /Contents ${contentId} 0 R >>`);
+    imageIds.push(imageId);contentIds.push(contentId);pageIds.push(pageId);
+  });
+  objects[catalogId-1]=`<< /Type /Catalog /Pages ${pagesId} 0 R >>`;
+  objects[pagesId-1]=`<< /Type /Pages /Count ${pageIds.length} /Kids [${pageIds.map(n=>n+' 0 R').join(' ')}] >>`;
+  append(pdfBytes('%PDF-1.4\n%Offline PDF\n'));
+  objects.forEach((obj,i)=>{
+    offsets.push(size);
+    append(pdfBytes(`${i+1} 0 obj\n`));
+    if(typeof obj==='string')append(pdfBytes(obj));
+    else if(obj.jpg){
+      append(pdfBytes(`<< /Type /XObject /Subtype /Image /Width ${obj.width} /Height ${obj.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${obj.jpg.length} >>\nstream\n`));
+      append(obj.jpg);append(pdfBytes('\nendstream'));
+    }else{
+      append(pdfBytes(`<< /Length ${obj.stream.length} >>\nstream\n`));
+      append(obj.stream);append(pdfBytes('\nendstream'));
+    }
+    append(pdfBytes('\nendobj\n'));
+  });
+  const xref=size;
+  append(pdfBytes(`xref\n0 ${objects.length+1}\n0000000000 65535 f \n`));
+  offsets.slice(1).forEach(offset=>append(pdfBytes(String(offset).padStart(10,'0')+' 00000 n \n')));
+  append(pdfBytes(`trailer\n<< /Size ${objects.length+1} /Root ${catalogId} 0 R >>\nstartxref\n${xref}\n%%EOF`));
+  return new Blob(chunks,{type:'application/pdf'});
+}
+let currentPdfUrl=null;
+async function shareCutPdf(){
+  const button=$('printPdf');
+  button.disabled=true;button.textContent='Gerando PDF...';
+  try{
+    const pdf=createCutPdf();
+    const file=new File([pdf],'Plano-de-Corte-MDF.pdf',{type:'application/pdf'});
+    // Compartilhamento nativo funciona no PWA instalado e permite imprimir/salvar.
+    if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+      try{await navigator.share({files:[file],title:'Plano de Corte MDF'});return;}
+      catch(err){if(err.name==='AbortError')return;}
+    }
+    // Alternativa offline: abrir PDF em visualizador do iPhone.
+    if(currentPdfUrl)URL.revokeObjectURL(currentPdfUrl);
+    currentPdfUrl=URL.createObjectURL(pdf);
+    const link=document.createElement('a');link.href=currentPdfUrl;link.download='Plano-de-Corte-MDF.pdf';
+    document.body.appendChild(link);link.click();link.remove();
+    $('summary').insertAdjacentHTML('beforeend','<p>PDF gerado. Abra o arquivo em Downloads/Arquivos e toque em Compartilhar para imprimir.</p>');
+  }catch(err){alert(err.message||'Não foi possível gerar o PDF.');}
+  finally{button.disabled=false;button.textContent='Gerar / Compartilhar PDF';}
+}
+$('printPdf').onclick=shareCutPdf;
+
 $('add').onclick=()=>addPart();$('run').onclick=calculate;
 $('example').onclick=()=>{ $('parts').innerHTML='';addPart('Lateral',600,720,2,'no');addPart('Prateleira',568,500,4,'yes');addPart('Porta',400,710,2,'no');addPart('Base',568,100,1,'yes');};
 $('save').onclick=()=>{let data={boardW:$('boardW').value,boardH:$('boardH').value,kerf:$('kerf').value,margin:$('margin').value,parts:[...document.querySelectorAll('.part')].map(r=>{let a=r.querySelector('.part-main').querySelectorAll('input,select');return [a[0].value,a[1].value,a[2].value,a[3].value,a[4].value,[...r.querySelectorAll('.edge-options input:checked')].map(x=>x.value)]})};localStorage.setItem('planoMDF',JSON.stringify(data));$('summary').textContent='Lista salva neste iPhone/navegador.'};
