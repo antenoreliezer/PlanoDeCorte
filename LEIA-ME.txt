@@ -20,3 +20,7 @@ O aplicativo faz os cálculos no próprio iPhone e não depende de conexão para
 
 ÍCONES: os arquivos da pasta icons/ já usam o logotipo original da Marcenaria Santos & Filho.
 Se já instalou uma versão anterior no iPhone, remova o atalho antigo da Tela de Início, abra a página atualizada no Safari e adicione novamente à Tela de Início para atualizar o ícone.
+
+
+IMPRESSÃO NO IPHONE
+A versão atualizada prepara uma página própria para impressão. Toque em Imprimir / PDF. Na tela de impressão do iPhone, use Compartilhar ou Imprimir; para salvar como PDF, abra a prévia e use Compartilhar > Salvar em Arquivos. Se o app instalado não abrir a janela, abra o endereço do GitHub Pages no Safari e repita.
